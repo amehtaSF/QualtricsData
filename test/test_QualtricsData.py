@@ -8,7 +8,7 @@ test_var_codebook_path = ''
 qd = QualtricsData(test_datafile_path)
 
 def test__set_value_codebook():
-    qd.rename_vars(test_var_codebook_path)
+    qd.rename_vars(test_var_codebook_path) # variable names need to be renamed to match with value codebook)
     qd._set_value_codebook(test_value_codebook_path)
     pprint(qd.value_codebook)
 
