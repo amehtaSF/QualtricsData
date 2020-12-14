@@ -1,5 +1,6 @@
 
 import pandas as pd
+import re
 
 class QualtricsData:
 
@@ -37,17 +38,21 @@ class QualtricsData:
         '''
         Take a value codebook csv, convert to nested dictionary format, and save as attribute
         e.g:
-         {'variable_prefix_1':
+         {'variable_1':
             {'qualtrics_option_1': new_numeric_option_1, 'qualtrics_option_2': new_numeric_option_2, ...},
-         'variable_prefix_2':
+         'variable_2':
             {'qualtrics_option_1': new_numeric_option_1, 'qualtrics_option_2': new_numeric_option_2, ...}
          }
         :param value_codebook_csv:
         :return:
         '''
         value_codebook_df = pd.read_csv(value_codebook_csv)
-        # some code
-        self.value_codebook = "fill in with value codebook dict"
+        value_codebook_re_dict = self.__dictify_nested_df(value_codebook_df)
+        self.value_codebook = {}
+        for column_regex, value_dict in value_codebook_re_dict.items():
+            column_regex_matches = [col_name for col_name in self.df_proc.columns if re.search(column_regex, col_name)]
+            for col_match in column_regex_matches:
+                self.value_codebook[col_match] = value_dict
 
     def rename_vars(self, var_codebook_csv):
         '''
@@ -81,4 +86,17 @@ class QualtricsData:
         # some code
         self.df_proc = "fill in with preprocessed dataframe"
         return self.df_proc
+
+    @staticmethod
+    def __dictify_nested_df(df):
+        d = {}
+        for row in df.values:
+            here = d
+            for elem in row[:-2]:
+                if elem not in here:
+                    here[elem] = {}
+                here = here[elem]
+            here[row[-2]] = row[-1]
+        return d
+
 

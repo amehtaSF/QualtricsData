@@ -1,0 +1,23 @@
+﻿variable_regex,old_value,new_value
+when_1,0-1 months ago,1
+when_1,1-2 months ago,2
+when_1,2-3 months ago,3
+when_1,3-4 months ago,4
+when_1,4-5 months ago,5
+when_1,5-6 months ago,6
+difficulty_1,Not difficult at all,1
+difficulty_1,Slightly difficult,2
+difficulty_1,Moderately difficult,3
+difficulty_1,Very difficult,4
+difficulty_1,Extremely difficult,5
+when_[234],${q://QID317/ChoiceDescription/1},1
+when_[234],${q://QID317/ChoiceDescription/2},2
+when_[234],${q://QID317/ChoiceDescription/3},3
+when_[234],${q://QID317/ChoiceDescription/4},4
+when_[234],${q://QID317/ChoiceDescription/5},5
+when_[234],${q://QID317/ChoiceDescription/6},6
+difficulty_[234],${q://QID230/ChoiceDescription/1},1
+difficulty_[234],${q://QID230/ChoiceDescription/2},2
+difficulty_[234],${q://QID230/ChoiceDescription/3},3
+difficulty_[234],${q://QID230/ChoiceDescription/4},4
+difficulty_[234],${q://QID230/ChoiceDescription/5},5
