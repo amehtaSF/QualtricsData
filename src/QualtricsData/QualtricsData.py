@@ -32,7 +32,8 @@ class QualtricsData:
         :return:
         '''
         var_codebook_df = pd.read_csv(var_codebook_csv)
-        self.var_codebook = "fill in with variable codebook dict"
+        self.var_codebook = self.__dictify_df(var_codebook_df)
+
 
     def _set_value_codebook(self, value_codebook_csv):
         '''
@@ -48,11 +49,15 @@ class QualtricsData:
         '''
         value_codebook_df = pd.read_csv(value_codebook_csv)
         value_codebook_re_dict = self.__dictify_nested_df(value_codebook_df)
+        #print(value_codebook_re_dict)
         self.value_codebook = {}
         for column_regex, value_dict in value_codebook_re_dict.items():
+            #print(column_regex)
             column_regex_matches = [col_name for col_name in self.df_proc.columns if re.search(column_regex, col_name)]
+            #print(column_regex_matches)
             for col_match in column_regex_matches:
                 self.value_codebook[col_match] = value_dict
+        #print(self.value_codebook)
 
     def rename_vars(self, var_codebook_csv):
         '''
@@ -61,9 +66,15 @@ class QualtricsData:
         :return:
         '''
         self._set_var_codebook(var_codebook_csv)
-        # some code
-        self.df_proc = "fill in with preprocessed dataframe"
-        return self.df_proc
+
+        for column_name in self.df_proc.columns:
+
+            if column_name in self.var_codebook:
+
+                self.df_proc.rename(columns={column_name: self.var_codebook[column_name]}, inplace=True)
+
+
+        #print(self.df_proc['difficulty_2'])
 
     def recode_values(self, value_codebook_csv):
         '''
@@ -72,9 +83,30 @@ class QualtricsData:
         :return:
         '''
         self._set_value_codebook(value_codebook_csv)
-        # some code
-        self.df_proc = "fill in with preprocessed dataframe"
-        return self.df_proc
+        for column_name in self.df_proc.columns:
+            if column_name in self.value_codebook:
+                final_df_proc = self.df_proc.replace(self.value_codebook)
+        self.df_proc = final_df_proc
+
+        print(self.df_proc['difficulty_3'])
+
+
+        #instances of NaN are kept NaN
+
+
+
+
+        #value_codebook_df = pd.read_csv(value_codebook_csv)
+        #value_codebook_re_dict = self.__dictify_nested_df(value_codebook_df)
+        #for column_regex, value_dict in value_codebook_re_dict.items():
+         #   print(column_regex)
+          #  column_regex_matches = [col_name for col_name in self.df_proc.columns if re.search(column_regex, col_name)]
+           # print(column_regex_matches)
+            #for col_match in column_regex_matches:
+             #   self.value_codebook[col_match] = value_dict
+        #self.df_proc.replace(())
+        #self.df_proc = "fill in with preprocessed dataframe"
+        #return self.df_proc
 
     def remove_attention_fails(self, attention_dict):
         '''
@@ -97,6 +129,13 @@ class QualtricsData:
                     here[elem] = {}
                 here = here[elem]
             here[row[-2]] = row[-1]
+        return d
+
+    @staticmethod
+    def __dictify_df(df):
+        d = {}
+        for row in df.values:
+            d[row[-2]] = row[-1]
         return d
 
 
