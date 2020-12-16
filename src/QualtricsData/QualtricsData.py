@@ -52,7 +52,7 @@ class QualtricsData:
         #print(value_codebook_re_dict)
         self.value_codebook = {}
         for column_regex, value_dict in value_codebook_re_dict.items():
-            #print(column_regex)
+            #print(type(column_regex))
             column_regex_matches = [col_name for col_name in self.df_proc.columns if re.search(column_regex, col_name)]
             #print(column_regex_matches)
             for col_match in column_regex_matches:
@@ -82,13 +82,14 @@ class QualtricsData:
         :param value_codebook_csv:
         :return:
         '''
+        #print(self.df_proc['when_1'])
         self._set_value_codebook(value_codebook_csv)
         for column_name in self.df_proc.columns:
             if column_name in self.value_codebook:
                 final_df_proc = self.df_proc.replace(self.value_codebook)
         self.df_proc = final_df_proc
 
-        print(self.df_proc['difficulty_3'])
+       # print(self.df_proc['when_1'])
 
 
         #instances of NaN are kept NaN
