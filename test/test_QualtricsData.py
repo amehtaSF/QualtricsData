@@ -14,6 +14,7 @@ def test__set_value_codebook():
     qd._set_value_codebook(test_value_codebook_path)
     qd.recode_values(test_value_codebook_path)
 
+    print(qd.df_proc['rethink_1'])
     #pprint(qd.value_codebook)
 
 if __name__ == '__main__':
