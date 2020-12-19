@@ -16,12 +16,11 @@ class QualtricsData:
 
     def _read_raw_data(self):
         '''
-        This function reads in a qualtrics datafile and removes incomplete entries.
-        It also removes the two erroneous rows at the top of the file.
+        This function reads in a qualtrics datafile and removes the two erroneous rows at the top of the file.
         :return:
         '''
         df = pd.read_csv(self.data_csv)
-        df = df.loc[df['Finished'] == 'TRUE', :].reset_index()
+        df = df.loc[df['Finished'].isin(['TRUE', 'FALSE'])].reset_index(drop=True)
         return df
 
     def _set_var_codebook(self, var_codebook_csv):
@@ -49,15 +48,11 @@ class QualtricsData:
         '''
         value_codebook_df = pd.read_csv(value_codebook_csv)
         value_codebook_re_dict = self.__dictify_nested_df(value_codebook_df)
-        #print(value_codebook_re_dict)
         self.value_codebook = {}
         for column_regex, value_dict in value_codebook_re_dict.items():
-            #print(type(column_regex))
             column_regex_matches = [col_name for col_name in self.df_proc.columns if re.search(column_regex, col_name)]
-            #print(column_regex_matches)
             for col_match in column_regex_matches:
                 self.value_codebook[col_match] = value_dict
-        #print(self.value_codebook)
 
     def rename_vars(self, var_codebook_csv):
         '''
@@ -66,15 +61,9 @@ class QualtricsData:
         :return:
         '''
         self._set_var_codebook(var_codebook_csv)
-
         for column_name in self.df_proc.columns:
-
             if column_name in self.var_codebook:
-
-                self.df_proc.rename(columns={column_name: self.var_codebook[column_name]}, inplace=True)
-
-
-        #print(self.df_proc['difficulty_2'])
+                self.df_proc = self.df_proc.rename(columns={column_name: self.var_codebook[column_name]})
 
     def recode_values(self, value_codebook_csv):
         '''
@@ -82,42 +71,23 @@ class QualtricsData:
         :param value_codebook_csv:
         :return:
         '''
-        #print(self.df_proc['when_1'])
         self._set_value_codebook(value_codebook_csv)
-        for column_name in self.df_proc.columns:
-            if column_name in self.value_codebook:
-                final_df_proc = self.df_proc.replace(self.value_codebook)
-        self.df_proc = final_df_proc
+        self.df_proc = self.df_proc.replace(self.value_codebook)
 
-       # print(self.df_proc['when_1'])
-
-
-        #instances of NaN are kept NaN
-
-
-
-
-        #value_codebook_df = pd.read_csv(value_codebook_csv)
-        #value_codebook_re_dict = self.__dictify_nested_df(value_codebook_df)
-        #for column_regex, value_dict in value_codebook_re_dict.items():
-         #   print(column_regex)
-          #  column_regex_matches = [col_name for col_name in self.df_proc.columns if re.search(column_regex, col_name)]
-           # print(column_regex_matches)
-            #for col_match in column_regex_matches:
-             #   self.value_codebook[col_match] = value_dict
-        #self.df_proc.replace(())
-        #self.df_proc = "fill in with preprocessed dataframe"
-        #return self.df_proc
-
-    def remove_attention_fails(self, attention_dict):
+    def filter_rows(self, attention_dict):
         '''
-        Remove rows where the participant failed an attention check
-        :param attention_dict: attention check dictionary of the form {'column_name_1': 'passing_answer', 'column_name_2': 'passing_answer'}
+        Remove rows based on response e.g. where the participant failed an attention check
+        :param attention_dict: dictionary of the form {'column_name_1': 'passing_answer', 'column_name_2': 'passing_answer'}
         :return:
         '''
+        # TODO: accept other formats of attention dict
         self.attention_dict = attention_dict
-        # some code
-        self.df_proc = "fill in with preprocessed dataframe"
+        for column_name, passing_answer in attention_dict.items():
+            if isinstance(passing_answer, list):
+                df = self.df_proc.loc[self.df_proc[column_name].isin(passing_answer)]
+            else:
+                df = self.df_proc.loc[self.df_proc[column_name]==passing_answer]
+        self.df_proc = df.reset_index(drop=True)
         return self.df_proc
 
     @staticmethod
@@ -134,6 +104,7 @@ class QualtricsData:
 
     @staticmethod
     def __dictify_df(df):
+        # TODO: combine with nested df function
         d = {}
         for row in df.values:
             d[row[-2]] = row[-1]
