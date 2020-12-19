@@ -1,5 +1,5 @@
 from src.QualtricsData.QualtricsData import QualtricsData
-import regex as re
+import re
 import pandas as pd
 test_datafile_path = '../data/example_data_file.csv'
 test_value_codebook_path = '../data/example_value_codebook.csv'
@@ -46,12 +46,14 @@ def preprocessing():
     neg_post_df = one_col_for_one_participant_from_qualt_df(df, neg_post_pattern, 'neg_post')
     combined_df = pd.concat([situation_df, rethink_df, difficulty_df, pos_pre_df, neg_pre_df, pos_post_df, neg_post_df], axis=1)
     #combined_df['pid'] =qd.df_proc['pid']
+
     #print(combined_df['situation_num'].max())
     #num_pid_repetitions = int(combined_df['situation_num'].max()) # finding how many times each entry of pid needs to be replicated so pid for each row of processed df can be added
     #pid_df = pd.DataFrame()
     #pid_df['pid'] = None
     #for pid in qd.df_proc['pid']:
      #   pid_df['pid'] = pid
+
 
 
     #print(pid_df)
