@@ -20,7 +20,8 @@ class QualtricsData:
         :return:
         '''
         df = pd.read_csv(self.data_csv)
-        df = df.loc[df['Finished'].isin(['TRUE', 'FALSE'])].reset_index(drop=True)
+        df['Finished'] = df['Finished'].str.lower()
+        df = df.loc[df['Finished'].isin(['true', 'false'])].reset_index(drop=True)
         return df
 
     def _set_var_codebook(self, var_codebook_csv):
